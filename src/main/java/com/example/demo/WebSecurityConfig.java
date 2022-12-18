@@ -22,17 +22,6 @@ import java.util.List;
 public class WebSecurityConfig {
 
     @Bean
-    public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
-
-        UserDetails user = User.withUsername("admin")
-                .password(passwordEncoder.encode("admin"))
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(user);
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         var paths = List.of("/", "/static/**", "/*.png", "/favicon.ico", "/manifest.json", "/actuator/**");
@@ -41,14 +30,12 @@ public class WebSecurityConfig {
                 .toList().toArray(new RequestMatcher[paths.size()]);
 
         http
-            .securityContext( securityContext -> securityContext.requireExplicitSave(false))
             .authorizeHttpRequests((authz) -> authz
                     .requestMatchers(openEndpoints).permitAll()
                     .anyRequest().authenticated()
             )
-//            .sessionManagement(session -> session
-//                    .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-//            )
+            .securityContext( securityContext -> securityContext.requireExplicitSave(false))
+//            .sessionManagement( session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .httpBasic()
                 .and()
             .csrf()
@@ -63,6 +50,16 @@ public class WebSecurityConfig {
         return http.build();
     }
 
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
+
+        UserDetails user = User.withUsername("admin")
+                .password(passwordEncoder.encode("admin"))
+                .roles("ADMIN")
+                .build();
+
+        return new InMemoryUserDetailsManager(user);
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
