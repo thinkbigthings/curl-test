@@ -1,6 +1,9 @@
 # curl-test
 
-Test sessions on spring security 6
+This is a sample demo to test sessions on spring security 6
+intended to demonstrate the spring security issue 
+https://github.com/spring-projects/spring-security/issues/12431
+
 
 Requires Java 17
 
